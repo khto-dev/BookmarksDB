@@ -1,0 +1,116 @@
+{% macro bookmark_li(id, url, notes, tags, timestamp, title, description, image) %}
+<li class="bookmark" data-bookmark-id="{{ id }}">
+    <a href="{{ url }}" target="_blank">
+        <!-- Link preview -->
+        <section class="preview">
+            {% if image != "" %}
+                <img 
+                    src="{{ image }}" 
+                    alt="{{ title }} thumbnail" 
+                    loading="lazy" 
+                />
+            {% endif %}
+            <section class="content">
+                <!-- Preview title -->
+                {% if title %}
+                    <h2 class="title" title="{{ title }}">{{ title }}</h2>
+                {% endif %}
+                <!-- Preview URL -->
+                <p class="url">
+                    {{ url }}
+                </p>
+                <!-- Preview description -->
+                {% if description %}
+                    <p class="description">{{ description }}</p>
+                {% endif %}
+            </section>
+        </section>
+    </a>
+
+    <!-- Database info -->
+    <!-- Tag list -->
+    <ul class="tag-list">
+        {% for tag in tags %}
+            <a href="/filter={{ tag }}">
+                <li class="tag">{{ tag }}</li>
+            </a>
+        {% endfor %}
+    </ul>
+    <section class="info">
+        <!-- Notes -->
+        {% if notes %}
+        <p class="notes">
+                {{ notes }}
+            </p>
+        {% endif %}
+        <footer>
+            <time>
+                {{ timestamp }}
+            </time>
+            <!-- Action buttons -->
+            <section class="actions">
+                <button class="edit" name="id" value="{{ id }}"></button>
+                <button class="delete" name="id" value="{{ id }}"></button>
+            </secion>
+        </footer>
+    </section>
+</li>
+{% endmacro %}
+
+
+{% macro bookmark_modal() %}
+<dialog id="bookmark-modal" class="modal">
+    <form action="/new" method="post">
+        <input 
+            type="text" 
+            class="url" 
+            name="url" 
+            autocomplete="off" 
+            placeholder="URL" 
+            autofocus 
+            required
+        />
+        <ul class="tags-display"></ul>
+        <div class="tags">
+            <input 
+                type="text" 
+                class="tag-input" 
+                name="tag-input" 
+                autocomplete="off" 
+                placeholder="Enter a new tag"
+            />
+            <button class="add-tag">Add Tag</button>
+            <input 
+                type="text" 
+                class="tags-db" 
+                name="tags-db" 
+                autocomplete="off" 
+                value="" 
+                hidden
+            />
+        </div>
+        <textarea 
+            name="notes" 
+            placeholder="Notes" 
+            rows="6" 
+            wrap="soft"
+        ></textarea>
+        <div class="actions">
+            <button class="close-btn">Close</button>
+            <button class="confirm-btn" type="submit">Add</button>
+        </div>
+    </form>
+</dialog>
+{% endmacro %}
+
+{% macro confirmation_modal() %}
+<dialog id="delete-modal" class="modal">
+    <form action="/delete" method="post">
+        <h3>Are you sure you want to delete this bookmark?</h3>
+        <div class="actions">
+            <button class="close-btn">Cancel</button>
+            <button class="confirm-btn" type="submit">Delete</button>
+        </div>
+    </form>
+</dialog>
+{% endmacro %}

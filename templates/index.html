@@ -1,0 +1,66 @@
+{% extends "layout.html" %}
+{% from "components.html" import 
+    bookmark_li, 
+    bookmark_modal, 
+    confirmation_modal 
+%}
+
+{% block title %}Bookmarks{% endblock %}
+
+{% block body %}
+    {% with messages = get_flashed_messages() %}
+        {% if messages %}
+        <ul class=flashes>
+            <li>{{ messages[0] }}</li>
+        </ul>
+        {% endif %}
+    {% endwith %}
+
+    <main>
+        <button class="add"></button>
+
+        {{ bookmark_modal() }}
+
+        {{ confirmation_modal() }}
+
+        <form action="/" method="post" id="filter-search">
+            {% if keyword %}
+            <a href="/"><button class="clear"></button></a>
+            {% endif %}
+            <input 
+                list="keywords" 
+                name="keyword" 
+                placeholder="Search Filters" 
+                autocomplete="off" 
+                value="{{ keyword }}"
+            />
+            {% if tags %}
+            <datalist id="keywords">
+                {% for tag in tags %}
+                <option value="{{ tag }}">
+                {% endfor %}
+            </datalist>
+            {% endif %}
+            <button type="submit"></button>
+        </form>
+
+        {% if bookmarks %}
+        <ul class="bookmarks">
+            {% for bookmark in bookmarks %}
+                {{ bookmark_li(
+                    bookmark["id"], 
+                    bookmark["url"], 
+                    bookmark["notes"], 
+                    bookmark["tags"], 
+                    bookmark["timestamp"], 
+                    bookmark["meta"]["title"], 
+                    bookmark["meta"]["description"], 
+                    bookmark["meta"]["image"]
+                ) }}
+            {% endfor %}
+        </ul>
+        {% else %}
+        <p>No bookmarks found</p>
+        {% endif %}
+    </main>
+{% endblock %}
