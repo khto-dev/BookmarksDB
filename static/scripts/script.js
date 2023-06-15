@@ -1,6 +1,5 @@
 const separator = "{tag}"
 
-
 // Error messages
 const notifications = document.querySelector(".flashes");
 if (notifications) {
@@ -8,7 +7,6 @@ if (notifications) {
         notifications.remove();
     });
 }
-
 
 // Add bookmark button
 const add_button = document.querySelector(".add");

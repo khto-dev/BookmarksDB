@@ -6,6 +6,7 @@ import validators
 # Application initialization
 app = Flask(__name__)
 app.secret_key = config.SECRET_KEY
+app.config["SESSION_COOKIE_SAMESITE"] = "None"
 
 # Initial database startup
 connection = get_connection()

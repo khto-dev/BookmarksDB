@@ -1,6 +1,5 @@
 from bs4 import BeautifulSoup
 import requests
-from concurrent.futures import as_completed, wait
 import sqlite3
 import validators
 
@@ -110,8 +109,6 @@ def get_preview(bookmarks):
                         [bookmark["id"], title, description, image]
                     )
                     connection.commit()
-                else:
-                    bookmark["meta"]["title"] = "Website Not Found"
             except requests.exceptions.ConnectionError as error:
                 bookmark["meta"]["title"] = "Website Not Found"
         else:
@@ -129,10 +126,10 @@ def get_preview_title(html):
         title = html.find("title").string
     elif html.find("meta", attrs={"name": "title"}):
         title = html.find("meta", attrs={"name": "title"})["content"]
-    elif html.find("meta", property="og:title").get("content"):
+    elif html.find("meta", property="og:title"):
         title = html.find("meta", property="og:title").get("content")
-    elif html.find("meta", property="twitter:title"):
-        title = html.find("meta", property="twitter:title").get("content")
+    elif html.find("meta", attrs={"name": "twitter:title"}):
+        title = html.find("meta", attrs={"name": "twitter:title"}).get("content")
     return title
 
 def get_preview_description(html):
@@ -143,8 +140,8 @@ def get_preview_description(html):
         desc = html.find("meta", attrs={"name": "description"})["content"]
     elif html.find("meta", property="og:description"):
         desc = html.find("meta", property="og:description").get("content")
-    elif html.find("meta", property="twitter:description"):
-        desc = html.find("meta", property="twitter:description").get("content")
+    elif html.find("meta", attrs={"name": "twitter:description"}):
+        desc = html.find("meta", attrs={"name": "twitter:description"}).get("content")
     return desc
     
 def get_preview_image(html):
@@ -155,8 +152,8 @@ def get_preview_image(html):
         img = html.find("meta", attrs={"name": "image"})["content"]
     elif html.find("meta", property="og:image"):
         img = html.find("meta", property="og:image").get("content")
-    elif html.find("meta", property="twitter:image"):
-        img = html.find("meta", property="twitter:image").get("content")
+    elif html.find("meta", attrs={"name": "twitter:image"}):
+        img = html.find("meta", attrs={"name": "twitter:image"}).get("content")
     
     if (validators.url(img)):
         return img
