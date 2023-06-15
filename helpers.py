@@ -38,6 +38,17 @@ def initialize_database(connection):
         );
     """
     connection.execute(sql_create_tags_table)
+
+    sql_create_previews_table = """
+        CREATE TABLE IF NOT EXISTS previews (
+            bookmark_id INTEGER NOT NULL,
+            title       TEXT,
+            description TEXT,
+            image       TEXT,
+            FOREIGN KEY (bookmark_id) REFERENCES bookmarks (id)
+        );
+    """
+    connection.execute(sql_create_previews_table)
     
     connection.close()
 
@@ -63,6 +74,17 @@ def get_tags(bookmarks):
 # https://anshu-dev.medium.com/generating-link-preview-using-beautifulsoup4-and-django-654957ac7ff6
 def get_preview(bookmarks):
     """Populates each bookmark with metadata of respective URLs."""
+    connection = get_connection()
+
+    previews_query = connection.execute(
+        """
+        SELECT *
+        FROM previews
+        """
+    ).fetchall()
+    previews_list = [dict(preview) for preview in previews_query]
+    previews_dict = {preview["bookmark_id"]: preview for preview in previews_list}
+
     for bookmark in bookmarks:
         bookmark["meta"] = {
             "title": "", 
@@ -70,17 +92,39 @@ def get_preview(bookmarks):
             "image": ""
         }
 
-        try:
-            request = session.get(bookmark["url"])
-            if (request.status_code == 200):
-                html = BeautifulSoup(request.text, "html.parser")
-                bookmark["meta"]["title"] = get_preview_title(html)
-                bookmark["meta"]["description"] = get_preview_description(html)
-                bookmark["meta"]["image"] = get_preview_image(html)
-            else:
+        if not previews_dict.get(bookmark["id"]):
+            try:
+                request = session.get(bookmark["url"])
+                if (request.status_code == 200):
+                    html = BeautifulSoup(request.text, "html.parser")
+                    title = get_preview_title(html)
+                    bookmark["meta"]["title"] = title
+                    description = get_preview_description(html)
+                    bookmark["meta"]["description"] = description
+                    image = get_preview_image(html)
+                    bookmark["meta"]["image"] = image
+                    connection.execute(
+                        """
+                        INSERT INTO previews 
+                                    (bookmark_id, title, description, image)
+                        VALUES (?, ?, ?, ?)
+                        """,
+                        [bookmark["id"], title, description, image]
+                    )
+                    connection.commit()
+                else:
+                    bookmark["meta"]["title"] = "Website Not Found"
+            except requests.exceptions.ConnectionError as error:
                 bookmark["meta"]["title"] = "Website Not Found"
-        except requests.exceptions.ConnectionError as error:
-            bookmark["meta"]["title"] = "Website Not Found"
+        else:
+            preview_data = previews_dict.get(bookmark["id"])
+            bookmark["meta"]["title"] = preview_data["title"]
+            bookmark["meta"]["description"] = preview_data["description"]
+            bookmark["meta"]["image"] = preview_data["image"]
+
+
+    connection.close()
+        
 
 def get_preview_title(html):
     title = ""
@@ -228,7 +272,6 @@ def update_bookmark(bookmark):
         """,
         [bookmark["id"]]
     ).fetchall()]
-    print(db_tags)
 
     connection.close()
     
