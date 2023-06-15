@@ -1,1 +1,0 @@
-SECRET_KEY = "NgFxIMk~dw~y7CR+(c.Rkete"
