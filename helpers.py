@@ -1,12 +1,10 @@
 from bs4 import BeautifulSoup
-import requests, requests_cache
-from requests_futures.sessions import FuturesSession
+import requests
 from concurrent.futures import as_completed, wait
 import sqlite3
 import validators
 
-
-session = requests_cache.CachedSession("preview_cache")
+session = requests.Session()
 
 def get_connection():
     """Return the connection to the database."""
@@ -124,7 +122,6 @@ def get_preview(bookmarks):
 
 
     connection.close()
-        
 
 def get_preview_title(html):
     title = ""

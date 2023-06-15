@@ -1,16 +1,16 @@
 from flask import Flask, flash, redirect, render_template, request, url_for
 from helpers import *
+import config
 import validators
 
 # Application initialization
 app = Flask(__name__)
-app.secret_key = "tempsecretkey"
+app.secret_key = config.SECRET_KEY
 
 # Initial database startup
 connection = get_connection()
 initialize_database(connection)
 connection.close()
-
 
 # Environmental variables
 separator = "{tag}"
@@ -107,6 +107,7 @@ def new_bookmark():
 
     return redirect("/")
 
+# Delete Bookmark
 @app.route("/delete/<id>", methods=["POST"])
 def delete_bookmark(id):
     connection = get_connection();
@@ -130,6 +131,7 @@ def delete_bookmark(id):
 
     return redirect("/")
 
+# Edit Bookmark
 @app.route("/edit/<id>", methods=["POST"])
 def edit_bookmark(id):
     bookmark = {}
@@ -139,6 +141,7 @@ def edit_bookmark(id):
     bookmark["tags"] = []
     if request.form.get("tags-db"):
         tags = request.form.get("tags-db").split(separator)[1:]
+        print(request.form.get("tags-db"))
         # Normalize styling and removes duplicates
         bookmark["tags"] = list(set([tag for tag in tags]))
     

@@ -22,7 +22,7 @@ add_button.addEventListener("click", (e) => {
 const show_modal = (action, id="") => {
     const form = bookmark_modal.querySelector("form");
     const delete_form = delete_modal.querySelector("form");
-
+    
     if (action === "add") {
         form.setAttribute("action", "/new");
         bookmark_modal.querySelector(".confirm-btn").textContent = "Add";
@@ -117,27 +117,31 @@ bookmarks.addEventListener("click", (e) => {
         const bookmark = Array.from(
             bookmarks.querySelectorAll("[data-bookmark-id]")
         ).filter(bookmark => bookmark.dataset.bookmarkId == id)[0];
-        console.log(bookmark);
 
         const url = bookmark.querySelector(".url").textContent.trim();
-        const notes = bookmark.querySelector(".notes").textContent.trim();
-        const tags =
-            Array.from(
-                bookmark
-                    .querySelector(".tag-list")
-                    .querySelectorAll("li")
-            ).map(tag => tag.textContent);
-        
+        let notes = bookmark.querySelector(".notes");
+        let tags = Array.from(
+            bookmark
+            .querySelector(".tag-list")
+            .querySelectorAll("li")
+        )
+        if (tags.length > 0) {
+            tags = tags.map(tag => tag.textContent)
+            bookmark_modal.querySelector(".tags-db").value = 
+                separator + tags.join(separator);
+        }
+
         bookmark_modal.querySelector(".url").value = url;
-        bookmark_modal.querySelector("textarea").textContent = notes;
+        if (notes) {
+            bookmark_modal.querySelector("textarea").textContent = 
+                notes.textContent.trim();
+        }
         tags.forEach((tag) => {
             const new_tag = document.createElement("li");
             new_tag.classList.add("tag");
             new_tag.textContent = tag;
             bookmark_modal.querySelector(".tags-display").append(new_tag);
         });
-        bookmark_modal.querySelector(".tags-db").value = 
-            separator + tags.join(separator);
     }
 
     // Delete button
@@ -152,6 +156,5 @@ const filter_search = document.querySelector("#filter-search");
 const filter_input = filter_search.querySelector("input")
 filter_input.addEventListener("input", (e) => {
     const keyword = filter_search.keyword.value;
-    console.log(keyword);
     filter_search.setAttribute("action", "/filter="+keyword);
 });
