@@ -8,11 +8,20 @@
     --tertiary-accent-colour: #E8E8E8;
 
     --main-font-colour: #121212;
-    --accent-font-colour: #F1F1F1;
+    --accent-font-colour: #f8f8f8;
 }
 @media (prefers-color-scheme: dark) {
     :root {
-        
+        --main-bg-colour: #131313;
+        --primary-bg-colour: #2e2e2e;
+    
+        --main-accent-colour: #c4d8ff;
+        --danger-accent-colour: #ff5b5b;
+        --secondary-accent-colour: #8ea9d4;
+        --tertiary-accent-colour: #2c2e31;
+    
+        --main-font-colour: #f1f1f1;
+        --accent-font-colour: #1c1f22;
     }
 }
 
@@ -122,6 +131,14 @@ main > p {
 .modal {
     width: 95vw;
     max-width: 30rem;
+    border-radius: 0.5rem;
+    padding: 1.25rem;
+    border-color: var(--tertiary-accent-colour);
+    background-color: var(--main-bg-colour);
+    color: var(--main-font-colour);
+}
+.modal::backdrop {
+    background-color: rgba(0, 0, 0, 0.7);
 }
 .modal form {
     display: flex;
@@ -131,6 +148,12 @@ main > p {
 }
 .modal form > * {
     width: 100%;
+}
+.modal input,
+.modal textarea {
+    color: var(--main-font-colour);
+    background-color: var(--primary-bg-colour);
+    border: none;
 }
 .modal form button {
     border-radius: 0.5rem;
