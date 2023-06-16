@@ -233,6 +233,7 @@ main > p {
     display: inline-block;
     text-align: middle;
     font-weight: 900;
+    color: var(--secondary-accent-colour);
 }
 
 
